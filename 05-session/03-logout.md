@@ -52,7 +52,7 @@ index 2d39904..6c87a08 100644
              <li><a href="http://www.phoenixframework.org/docs">Get Started</a></li>
              <%= if @current_user do %>
                <li><%= link @current_user.username, to: user_path(@conn, :show, @current_user) %></li>
-+              <li><%= link "退出", to: session_path(@conn, :delete, @current_user), method: "delete" %></li>
++              <li><%= link "退出", to: Routes.session_path(@conn, :delete, @current_user), method: "delete" %></li>
              <% end %>
            </ul>
          </nav>

@@ -50,11 +50,12 @@ index be4148a..8174c14 100644
    # Bring render/3 and render_to_string/3 for testing custom views
    import Phoenix.View
 
-+  alias TvRecipe.Recipe
++  alias TvRecipe.Recipes.Recipe
++  @recipe1 %{id: "1", name: "淘米", title: "侠饭", season: "1", episode: "1", content: "洗掉米表面的淀粉", user_id: "999"}
++  @recipe2 %{id: "2", name: "煮饭", title: "侠饭", season: "1", episode: "1", content: "浸泡", user_id: "888"}
 +
 +  test "render index.html", %{conn: conn} do
-+    recipes = [%Recipe{id: "1", name: "淘米", title: "侠饭", season: "1", episode: "1", content: "洗掉米表面的淀粉", user_id: "999"},
-+      %Recipe{id: "2", name: "煮饭", title: "侠饭", season: "1", episode: "1", content: "浸泡", user_id: "888"}]
++    recipes = [struct(Recipe, @recipe1), struct(Recipe, @recipe2)]
 +    content = render_to_string(TvRecipe.RecipeView, "index.html", conn: conn, recipes: recipes)
 +    # 页面上包含标题 Listing recipes
 +    assert String.contains?(content, "Listing recipes")

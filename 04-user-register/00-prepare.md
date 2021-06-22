@@ -42,15 +42,15 @@
 
 但这样的手动添加过程太麻烦，还容易出错，应该有便捷的方法。
 
-是的，Phoenix 提供了一系列的 mix 工具包。我们要接触的这个是 [`mix phoenix.gen.html`](https://hexdocs.pm/phoenix/Mix.Tasks.Phoenix.Gen.Html.html)。
+是的，Phoenix 提供了一系列的 mix 工具包。我们要接触的这个是 [`mix phx.gen.html`](https://hexdocs.pm/phoenix/Mix.Tasks.Phoenix.Gen.Html.html)。
 
-请在命令行窗口下切换到 `tv_recipe` 目录，然后执行 `mix phoenix.gen.html` 命令：
+请在命令行窗口下切换到 `tv_recipe` 目录，然后执行 `mix phx.gen.html` 命令：
 
 ```
 $ cd tv_recipe
-$ mix phoenix.gen.html User users username:string:unique email:string:unique password:string
+$ mix phx.gen.html Users User users username:string:unique email:string:unique password:string
 ```
-![mix phoenix.gen.html 命令](/img/02-mix-phoenix.gen.html.png)
+![mix phx.gen.html 命令](/img/02-mix-phoenix.gen.html.png)
 
 执行命令后的输出如下：
 
@@ -128,7 +128,7 @@ Generated tv_recipe app
 
 ![创建用户页面截图](/img/04-users-new-page.png)
 
-有了。是不是很惊讶？我们用 `mix phoenix.gen.html` 命令生成的样板，功能已经很完善：增删改查功能全都有了。我们需要的，只是在样板基础上做点修改。
+有了。是不是很惊讶？我们用 `mix phx.gen.html` 命令生成的样板，功能已经很完善：增删改查功能全都有了。我们需要的，只是在样板基础上做点修改。
 
 [接下来](/04-user-register/01-username-required.md)几章，我们将一步步完成本章开头列出的限制条件。
 

@@ -13,10 +13,10 @@ episode|integer|第几集|必填|1
 content|text|内容|必填|
 user_id|integer|关联用户 id|必填|
 
-这里我们可以直接使用 `mix phoenix.gen.html` 命令来生成菜谱相关的所有文件：
+这里我们可以直接使用 `mix phx.gen.html` 命令来生成菜谱相关的所有文件：
 
 ```bash
-$ mix phoenix.gen.html Recipe recipes name title season:integer episode:integer content:text user_id:references:users
+$ mix phx.gen.html Recipes Recipe recipes name title season:integer episode:integer content:text user_id:references:users
 * creating web/controllers/recipe_controller.ex
 * creating web/templates/recipe/edit.html.eex
 * creating web/templates/recipe/form.html.eex
@@ -37,7 +37,7 @@ Remember to update your repository by running migrations:
 
     $ mix ecto.migrate
 ```
-![mix phoenix.gen.html Recipe](/img/07-generate-recipe.png)
+![mix phx.gen.html Recipe](/img/07-generate-recipe.png)
 
 我们先按照提示把 `resources "/recipes", RecipeController` 加入 `web/router.ex` 文件中：
 

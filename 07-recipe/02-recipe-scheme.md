@@ -2,7 +2,7 @@
 
 在开发用户时，我们曾经分章节完成各个属性。但这里不再细分。
 
-我们来看下 `mix phoenix.gen.html` 命令生成的 `recipe_test.exs` 文件内容：
+我们来看下 `mix phx.gen.html` 命令生成的 `recipe_test.exs` 文件内容：
 
 ```elixir
 defmodule TvRecipe.RecipeTest do

@@ -1,6 +1,6 @@
 # 登录
 
-这一次，我们没有 `mix phoenix.gen.html` 可以用，所以要一步一步写了。
+这一次，我们没有 `mix phx.gen.html` 可以用，所以要一步一步写了。
 
 它的过程，跟[添加帮助文件一章](/02-explore-phoenix/02-explore-phoenix.md)一样。
 

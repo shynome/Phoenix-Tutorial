@@ -22,7 +22,7 @@ index 4c174ab..47df0c7 100644
 +  end
  end
 ```
-此时运行 `mix test test/models/user_test.exs`，我们的测试会全部通过。这是因为，我们在执行 `mix phoenix.gen.html` 命令时，指定了 `unique` 给 `username` 字段，这样生成的 `User` 结构里，我们已经有了唯一性的限定规则，如下所示：
+此时运行 `mix test test/models/user_test.exs`，我们的测试会全部通过。这是因为，我们在执行 `mix phx.gen.html` 命令时，指定了 `unique` 给 `username` 字段，这样生成的 `User` 结构里，我们已经有了唯一性的限定规则，如下所示：
 
 ```elixir
 def changeset(struct, params \\ %{}) do
@@ -218,7 +218,7 @@ index 88ad2af..fc07824 100644
 
 ## 数据库迁移
 
-在[用户注册一章](00-prepare.md)，我们用 `mix phoenix.gen.html` 生成了许多样板文件，其中有一条：
+在[用户注册一章](00-prepare.md)，我们用 `mix phx.gen.html` 生成了许多样板文件，其中有一条：
 
 ```bash
 * creating priv/repo/migrations/20170123145857_create_user.exs

@@ -1,6 +1,6 @@
 # 菜谱视图
 
-我们执行 [`mix phoenix.gen.html` 命令](https://github.com/phoenixframework/phoenix/blob/master/lib/mix/tasks/phoenix.gen.html.ex#L14)时，它会生成如下文件：
+我们执行 [`mix phx.gen.html` 命令](https://github.com/phoenixframework/phoenix/blob/master/lib/mix/tasks/phoenix.gen.html.ex#L14)时，它会生成如下文件：
 
 * a schema in web/models
 * a view in web/views

@@ -14,7 +14,7 @@ Don't panic，错误是指引我们成功的路灯。
 
 ```elixir
 defmodule TvRecipeWeb.SessionControllerTest do
-  use TvRecipe.ConnCase
+  use TvRecipeWeb.ConnCase
 end
 ```
 

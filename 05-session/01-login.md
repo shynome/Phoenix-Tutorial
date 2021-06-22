@@ -816,7 +816,7 @@ index e0406d2..1265c86 100644
      plug :fetch_flash
      plug :protect_from_forgery
      plug :put_secure_browser_headers
-+    plug TvRecipe.Auth, repo: TvRecipe.Repo
++    plug TvRecipeWeb.Auth, repo: TvRecipe.Repo
    end
 
    pipeline :api do

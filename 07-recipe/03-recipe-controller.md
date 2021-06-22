@@ -14,24 +14,31 @@ index 646ebf2..51fdeab 100644
 --- a/test/controllers/recipe_controller_test.exs
 +++ b/test/controllers/recipe_controller_test.exs
 @@ -1,10 +1,16 @@
- defmodule TvRecipe.RecipeControllerTest do
+ defmodule TvRecipeWeb.RecipeControllerTest do
    use TvRecipe.ConnCase
 
 -  alias TvRecipe.Recipe
-+  alias TvRecipe.{Repo, User, Recipe}
++  alias TvRecipe.Repo
++  alias TvRecipe.Users.User
++  alias TvRecipe.Recipes.Recipe
    @valid_attrs %{content: "some content", episode: 42, name: "some content", season: 42, title: "some content"}
    @invalid_attrs %{}
 
-+  setup do
-+    user = Repo.insert! User.changeset(%User{}, %{email: "chenxsan@gmail.com", username: "chenxsan", password: String.duplicate("1", 6)})
-+    attrs = Map.put(@valid_attrs, :user_id, user.id)
-+    {:ok, [attrs: attrs]}
-+  end
++  defp init_attrs(%{conn: conn} = context) do
++     user = Repo.insert! User.changeset(%User{}, %{email: "chenxsan@gmail.com", username: "chenxsan", password: String.duplicate("1", 6)})
++     attrs = Map.put(@valid_attrs, :user_id, user.id)
 +
++     context
++     |> Map.put :attrs, attrs
++  end
+
+describe "index" do
++  setup [:init_attrs]
+   
    test "lists all entries on index", %{conn: conn} do
      conn = get conn, recipe_path(conn, :index)
      assert html_response(conn, 200) =~ "Listing recipes"
-@@ -15,10 +21,10 @@ defmodule TvRecipe.RecipeControllerTest do
+@@ -15,10 +21,10 @@ defmodule TvRecipeWeb.RecipeControllerTest do
      assert html_response(conn, 200) =~ "New recipe"
    end
 +    user = Repo.insert! User.changeset(%User{}, %{email: "chenxsan@gmail.com", username: "chenxsan", password: String.duplicate("1", 6)})
@@ -42,7 +49,7 @@ index 646ebf2..51fdeab 100644
    test "lists all entries on index", %{conn: conn} do
      conn = get conn, recipe_path(conn, :index)
      assert html_response(conn, 200) =~ "Listing recipes"
-@@ -15,10 +21,10 @@ defmodule TvRecipe.RecipeControllerTest do
+@@ -15,10 +21,10 @@ defmodule TvRecipeWeb.RecipeControllerTest do
      assert html_response(conn, 200) =~ "New recipe"
    end
 
@@ -56,7 +63,7 @@ index 646ebf2..51fdeab 100644
    end
 
    test "does not create resource and renders errors when data is invalid", %{conn: conn} do
-@@ -44,11 +50,11 @@ defmodule TvRecipe.RecipeControllerTest do
+@@ -44,11 +50,11 @@ defmodule TvRecipeWeb.RecipeControllerTest do
      assert html_response(conn, 200) =~ "Edit recipe"
    end
 
@@ -101,103 +108,107 @@ delete|需要
 
 都要登录？难道未登录用户不能查看其它用户创建的菜谱？当然可以，但我们将新建路由来满足这些需求。这一节，我们开发的是 Recipe 相关的管理动作。
 
-前面章节中我们已经尝试过使用 `tag` 来标注用户登录状态下的测试，现在根据上面罗列的需求来修改 `recipe_controller_test.exs` 文件中的测试：
+前面章节中我们已经尝试过使用 `setup [:login_user]` 来标注用户登录状态下的测试，现在根据上面罗列的需求来修改 `recipe_controller_test.exs` 文件中的测试：
 
 ```elixir
 diff --git a/test/controllers/recipe_controller_test.exs b/test/controllers/recipe_controller_test.exs
 index 51fdeab..5632f8c 100644
 --- a/test/controllers/recipe_controller_test.exs
 +++ b/test/controllers/recipe_controller_test.exs
-@@ -5,51 +5,65 @@ defmodule TvRecipe.RecipeControllerTest do
+@@ -5,51 +5,65 @@ defmodule TvRecipeWeb.RecipeControllerTest do
    @valid_attrs %{content: "some content", episode: 42, name: "some content", season: 42, title: "some content"}
    @invalid_attrs %{}
 
--  setup do
--    user = Repo.insert! User.changeset(%User{}, %{email: "chenxsan@gmail.com", username: "chenxsan", password: String.duplicate("1", 6)})
--    attrs = Map.put(@valid_attrs, :user_id, user.id)
--    {:ok, [attrs: attrs]}
-+  setup %{conn: conn} = context do
+
++  defp login_user(%{conn: conn} = context) do
 +    user_attrs = %{email: "chenxsan@gmail.com", username: "chenxsan", password: String.duplicate("1", 6)}
 +    user = Repo.insert! User.changeset(%User{}, user_attrs)
-+     attrs = Map.put(@valid_attrs, :user_id, user.id)
-+    if context[:logged_in] == true do
-+      conn = post conn, session_path(conn, :create), session: user_attrs
-+      {:ok, [conn: conn, attrs: attrs]}
-+    else
-+      {:ok, [attrs: attrs]}
-+    end
++    attrs = Map.put(@valid_attrs, :user_id, user.id)
++    conn = post conn, session_path(conn, :create), session: user_attrs
++    
++    context 
++    |> Map.put :conn, conn
++    |> Map.put :user, user
    end
--
-+
-+  @tag logged_in: true
+
+-  defp init_attrs(%{conn: conn} = context) do
++  defp init_attrs(%{user: user} = context) do
+-     user = Repo.insert! User.changeset(%User{}, %{email: "chenxsan@gmail.com", username: "chenxsan", password: String.duplicate("1", 6)})
+      attrs = Map.put(@valid_attrs, :user_id, user.id)
+ 
+      context
+      |> Map.put :attrs, attrs
+   end
+
++  setup [:login_user, :init_attrs]
    test "lists all entries on index", %{conn: conn} do
      conn = get conn, recipe_path(conn, :index)
      assert html_response(conn, 200) =~ "Listing recipes"
    end
 
-+  @tag logged_in: true
++  setup [:login_user, :init_attrs]
    test "renders form for new resources", %{conn: conn} do
      conn = get conn, recipe_path(conn, :new)
      assert html_response(conn, 200) =~ "New recipe"
    end
 
-+  @tag logged_in: true
++  setup [:login_user, :init_attrs]
    test "creates resource and redirects when data is valid", %{conn: conn, attrs: attrs} do
      conn = post conn, recipe_path(conn, :create), recipe: attrs
      assert redirected_to(conn) == recipe_path(conn, :index)
      assert Repo.get_by(Recipe, attrs)
    end
 
-+  @tag logged_in: true
++  setup [:login_user, :init_attrs]
    test "does not create resource and renders errors when data is invalid", %{conn: conn} do
      conn = post conn, recipe_path(conn, :create), recipe: @invalid_attrs
      assert html_response(conn, 200) =~ "New recipe"
    end
 
-+  @tag logged_in: true
++  setup [:login_user, :init_attrs]
    test "shows chosen resource", %{conn: conn} do
      recipe = Repo.insert! %Recipe{}
      conn = get conn, recipe_path(conn, :show, recipe)
      assert html_response(conn, 200) =~ "Show recipe"
    end
 
-+  @tag logged_in: true
-+  @tag logged_in: true
++  setup [:login_user, :init_attrs]
++  setup [:login_user, :init_attrs]
    test "renders page not found when id is nonexistent", %{conn: conn} do
      assert_error_sent 404, fn ->
        get conn, recipe_path(conn, :show, -1)
      end
    end
 
-+  @tag logged_in: true
++  setup [:login_user, :init_attrs]
    test "renders form for editing chosen resource", %{conn: conn} do
      recipe = Repo.insert! %Recipe{}
      conn = get conn, recipe_path(conn, :edit, recipe)
      assert html_response(conn, 200) =~ "Edit recipe"
    end
 
-+  @tag logged_in: true
++  setup [:login_user, :init_attrs]
    test "updates chosen resource and redirects when data is valid", %{conn: conn, attrs: attrs} do
      recipe = Repo.insert! %Recipe{}
      conn = put conn, recipe_path(conn, :update, recipe), recipe: attrs
-@@ -57,12 +71,14 @@ defmodule TvRecipe.RecipeControllerTest do
+@@ -57,12 +71,14 @@ defmodule TvRecipeWeb.RecipeControllerTest do
      assert Repo.get_by(Recipe, attrs)
    end
 
-+  @tag logged_in: true
++  setup [:login_user, :init_attrs]
    test "does not update chosen resource and renders errors when data is invalid", %{conn: conn} do
      recipe = Repo.insert! %Recipe{}
      conn = put conn, recipe_path(conn, :update, recipe), recipe: @invalid_attrs
      assert html_response(conn, 200) =~ "Edit recipe"
    end
 
-+  @tag logged_in: true
++  setup [:login_user, :init_attrs]
    test "deletes chosen resource", %{conn: conn} do
      recipe = Repo.insert! %Recipe{}
      conn = delete conn, recipe_path(conn, :delete, recipe)
 ```
 
-我们给所有测试代码都加上了 `@tag logged_in` 的标签。
+我们给所有测试代码都加上了 `setup [:login_user, :init_attrs]` 的设置。
 
 接下来我们需要一个验证用户登录状态的 plug，不巧我们在 `user_controller.ex` 文件中已经定义了一个 `login_require` 的 plug，现在是其它地方也要用到它 - 再放在 `user_controller.ex` 中并不合适，我们将它移到 `auth.ex` 文件中：
 
@@ -207,14 +218,14 @@ index e298b68..3dd3e7f 100644
 --- a/web/controllers/auth.ex
 +++ b/web/controllers/auth.ex
 @@ -1,5 +1,7 @@
- defmodule TvRecipe.Auth do
+ defmodule TvRecipeWeb.Auth do
    import Plug.Conn
 +  import Phoenix.Controller
-+  alias TvRecipe.Router.Helpers
++  use MenuWeb, :controller
 
    @doc """
    初始化选项
-@@ -21,4 +23,37 @@ defmodule TvRecipe.Auth do
+@@ -21,4 +23,37 @@ defmodule TvRecipeWeb.Auth do
      |> configure_session(renew: true)
    end
 
@@ -229,7 +240,7 @@ index e298b68..3dd3e7f 100644
 +    else
 +      conn
 +      |> put_flash(:info, "请先登录")
-+      |> redirect(to: Helpers.session_path(conn, :new))
++      |> redirect(to: Routes.session_path(conn, :new))
 +      |> halt()
 +    end
 +  end
@@ -320,7 +331,7 @@ index 520d986..0f023d3 100644
 import Phoenix.Controller
 alias TvRecipe.Router.Helpers
 ```
-`import Phoenix.Controller` 导入 `put_flash` 等方法，而 `alias TvRecipe.Router.Helpers` 让我们在 `auth.ex` 中可以快速书写各种路径。
+`import Phoenix.Controller` 导入 `put_flash` 等方法，而 `use MenuWeb, :controller` 让我们在 `auth.ex` 中可以快速书写各种路径。
 
 接着在 `web.ex` 文件中 `import` 它：
 
@@ -333,7 +344,7 @@ index 50fd62e..9990080 100644
 
        import TvRecipe.Router.Helpers
        import TvRecipe.Gettext
-+      import TvRecipe.Auth, only: [login_require: 2, self_require: 2]
++      import TvRecipeWeb.Auth, only: [login_require: 2, self_require: 2]
      end
    end
 ```
@@ -375,7 +386,7 @@ diff --git a/test/controllers/recipe_controller_test.exs b/test/controllers/reci
 index 5632f8c..faf67ca 100644
 --- a/test/controllers/recipe_controller_test.exs
 +++ b/test/controllers/recipe_controller_test.exs
-@@ -16,7 +16,7 @@ defmodule TvRecipe.RecipeControllerTest do
+@@ -16,7 +16,7 @@ defmodule TvRecipeWeb.RecipeControllerTest do
        {:ok, [attrs: attrs]}
      end
    end
@@ -384,7 +395,7 @@ index 5632f8c..faf67ca 100644
    @tag logged_in: true
    test "lists all entries on index", %{conn: conn} do
      conn = get conn, recipe_path(conn, :index)
-@@ -85,4 +85,20 @@ defmodule TvRecipe.RecipeControllerTest do
+@@ -85,4 +85,20 @@ defmodule TvRecipeWeb.RecipeControllerTest do
      assert redirected_to(conn) == recipe_path(conn, :index)
      refute Repo.get(Recipe, recipe.id)
    end
@@ -427,12 +438,11 @@ diff --git a/test/controllers/recipe_controller_test.exs b/test/controllers/reci
 index faf67ca..d8157a2 100644
 --- a/test/controllers/recipe_controller_test.exs
 +++ b/test/controllers/recipe_controller_test.exs
-@@ -101,4 +101,17 @@ defmodule TvRecipe.RecipeControllerTest do
+@@ -101,4 +101,17 @@ defmodule TvRecipeWeb.RecipeControllerTest do
        assert conn.halted
      end)
    end
 +
-+  @tag logged_in: true
 +  test "creates resource and redirects when data is valid but with other user_id", %{conn: conn, attrs: attrs} do
 +    # 新建一个用户
 +    user = Repo.insert! User.changeset(%User{}, %{email: "chenxsan+1@gmail.com", username: "samchen", password: String.duplicate("1", 6)})
@@ -452,7 +462,7 @@ index faf67ca..d8157a2 100644
 $ mix test
 ..........................
 
-  1) test creates resource and redirects when data is valid but with other user_id (TvRecipe.RecipeControllerTest)
+  1) test creates resource and redirects when data is valid but with other user_id (TvRecipeWeb.RecipeControllerTest)
      test/controllers/recipe_controller_test.exs:106
      Expected truthy, got nil
      code: Repo.get_by(Recipe, attrs)
@@ -534,27 +544,19 @@ diff --git a/test/controllers/recipe_controller_test.exs b/test/controllers/reci
 index d8157a2..d953315 100644
 --- a/test/controllers/recipe_controller_test.exs
 +++ b/test/controllers/recipe_controller_test.exs
-@@ -7,13 +7,12 @@ defmodule TvRecipe.RecipeControllerTest do
+@@ -7,13 +7,12 @@ defmodule TvRecipeWeb.RecipeControllerTest do
 
-   setup %{conn: conn} = context do
-     user_attrs = %{email: "chenxsan@gmail.com", username: "chenxsan", password: String.duplicate("1", 6)}
--    user = Repo.insert! User.changeset(%User{}, user_attrs)
+-  defp init_attrs(%{user: user} = context) do
++  defp init_attrs(%{conn: conn} = context) do
 -     attrs = Map.put(@valid_attrs, :user_id, user.id)
-+    Repo.insert! User.changeset(%User{}, user_attrs)
-     if context[:logged_in] == true do
-       conn = post conn, session_path(conn, :create), session: user_attrs
--      {:ok, [conn: conn, attrs: attrs]}
-+      {:ok, [conn: conn]}
-     else
--      {:ok, [attrs: attrs]}
-+      :ok
-     end
+-
+      context
+      |> Map.put :attrs, @@valid_attrs
    end
 
-@@ -30,10 +29,10 @@ defmodule TvRecipe.RecipeControllerTest do
+@@ -30,10 +29,10 @@ defmodule TvRecipeWeb.RecipeControllerTest do
    end
 
-   @tag logged_in: true
 -  test "creates resource and redirects when data is valid", %{conn: conn, attrs: attrs} do
 -    conn = post conn, recipe_path(conn, :create), recipe: attrs
 +  test "creates resource and redirects when data is valid", %{conn: conn} do
@@ -564,12 +566,10 @@ index d8157a2..d953315 100644
 +    assert Repo.get_by(Recipe, @valid_attrs)
    end
 
-   @tag logged_in: true
-@@ -64,11 +63,11 @@ defmodule TvRecipe.RecipeControllerTest do
-@@ -64,11 +63,11 @@ defmodule TvRecipe.RecipeControllerTest do
+@@ -64,11 +63,11 @@ defmodule TvRecipeWeb.RecipeControllerTest do
+@@ -64,11 +63,11 @@ defmodule TvRecipeWeb.RecipeControllerTest do
    end
 
-   @tag logged_in: true
 -  test "updates chosen resource and redirects when data is valid", %{conn: conn, attrs: attrs} do
 +  test "updates chosen resource and redirects when data is valid", %{conn: conn} do
      recipe = Repo.insert! %Recipe{}
@@ -580,8 +580,8 @@ index d8157a2..d953315 100644
 +    assert Repo.get_by(Recipe, @valid_attrs)
    end
 
-   @tag logged_in: true
-@@ -102,16 +101,4 @@ defmodule TvRecipe.RecipeControllerTest do
+
+@@ -102,16 +101,4 @@ defmodule TvRecipeWeb.RecipeControllerTest do
      end)
    end
 
@@ -662,23 +662,9 @@ diff --git a/test/controllers/recipe_controller_test.exs b/test/controllers/reci
 index d953315..b901b61 100644
 --- a/test/controllers/recipe_controller_test.exs
 +++ b/test/controllers/recipe_controller_test.exs
-@@ -7,10 +7,10 @@ defmodule TvRecipe.RecipeControllerTest do
-
-   setup %{conn: conn} = context do
-     user_attrs = %{email: "chenxsan@gmail.com", username: "chenxsan", password: String.duplicate("1", 6)}
--    Repo.insert! User.changeset(%User{}, user_attrs)
-+    user = Repo.insert! User.changeset(%User{}, user_attrs)
-     if context[:logged_in] == true do
-       conn = post conn, session_path(conn, :create), session: user_attrs
--      {:ok, [conn: conn]}
-+      {:ok, [conn: conn, user: user]}
-     else
-       :ok
-     end
-@@ -29,10 +29,10 @@ defmodule TvRecipe.RecipeControllerTest do
+@@ -29,10 +29,10 @@ defmodule TvRecipeWeb.RecipeControllerTest do
    end
 
-   @tag logged_in: true
 -  test "creates resource and redirects when data is valid", %{conn: conn} do
 +  test "creates resource and redirects when data is valid", %{conn: conn, user: user} do
      conn = post conn, recipe_path(conn, :create), recipe: @valid_attrs
@@ -687,7 +673,6 @@ index d953315..b901b61 100644
 +    assert Repo.get_by(Recipe, Map.put(@valid_attrs, :user_id, user.id))
    end
 
-   @tag logged_in: true
 ```
 运行测试：
 
@@ -711,11 +696,10 @@ diff --git a/test/controllers/recipe_controller_test.exs b/test/controllers/reci
 index b901b61..cdbc420 100644
 --- a/test/controllers/recipe_controller_test.exs
 +++ b/test/controllers/recipe_controller_test.exs
-@@ -101,4 +101,19 @@ defmodule TvRecipe.RecipeControllerTest do
+@@ -101,4 +101,19 @@ defmodule TvRecipeWeb.RecipeControllerTest do
      end)
    end
 
-+  @tag logged_in: true
 +  test "user should not allowed to show recipe of other people", %{conn: conn, user: user} do
 +    # 当前登录用户创建了一个菜谱
 +    conn = post conn, recipe_path(conn, :create), recipe: @valid_attrs
@@ -739,7 +723,7 @@ mix test
 Compiling 1 file (.ex)
 ................................
 
-  1) test user should not allowed to show recipe of other people (TvRecipe.RecipeControllerTest)
+  1) test user should not allowed to show recipe of other people (TvRecipeWeb.RecipeControllerTest)
      test/controllers/recipe_controller_test.exs:105
      expected error to be sent as 404 status, but response sent 200 without error
      stacktrace:
@@ -771,7 +755,7 @@ index 967b7bc..22554ea 100644
 
    def show(conn, %{"id" => id}) do
 -    recipe = Repo.get!(Recipe, id)
-+    recipe = Repo.get!(assoc(conn.assigns.current_user, :recipes), id)
++    recipe = assoc(conn.assigns.current_user, :recipes) |> Repo.get!(id)
      render(conn, "show.html", recipe: recipe)
    end
 ```
@@ -781,7 +765,7 @@ index 967b7bc..22554ea 100644
 $ mix test
 ..........................
 
-  1) test shows chosen resource (TvRecipe.RecipeControllerTest)
+  1) test shows chosen resource (TvRecipeWeb.RecipeControllerTest)
      test/controllers/recipe_controller_test.exs:45
      ** (Ecto.NoResultsError) expected at least one result but got none in query:
 
@@ -816,7 +800,7 @@ diff --git a/test/controllers/recipe_controller_test.exs b/test/controllers/reci
 index cdbc420..d93bbd1 100644
 --- a/test/controllers/recipe_controller_test.exs
 +++ b/test/controllers/recipe_controller_test.exs
-@@ -42,8 +42,8 @@ defmodule TvRecipe.RecipeControllerTest do
+@@ -42,8 +42,8 @@ defmodule TvRecipeWeb.RecipeControllerTest do
    end
 
    @tag logged_in: true
@@ -851,7 +835,7 @@ index 22554ea..f317b59 100644
 
    def index(conn, _params) do
 -    recipes = Repo.all(Recipe)
-+    recipes = Repo.all(assoc(conn.assigns.current_user, :recipes))
++    recipes = assoc(conn.assigns.current_user, :recipes) |> Repo.all()
      render(conn, "index.html", recipes: recipes)
    end
 
@@ -860,14 +844,14 @@ index 22554ea..f317b59 100644
 
    def edit(conn, %{"id" => id}) do
 -    recipe = Repo.get!(Recipe, id)
-+    recipe = Repo.get!(assoc(conn.assigns.current_user, :recipes), id)
++    recipe = assoc(conn.assigns.current_user, :recipes) |> Repo.get!(id)
      changeset = Recipe.changeset(recipe)
      render(conn, "edit.html", recipe: recipe, changeset: changeset)
    end
 
    def update(conn, %{"id" => id, "recipe" => recipe_params}) do
 -    recipe = Repo.get!(Recipe, id)
-+    recipe = Repo.get!(assoc(conn.assigns.current_user, :recipes), id)
++    recipe = assoc(conn.assigns.current_user, :recipes) |> Repo.get!(id)
      changeset = Recipe.changeset(recipe, recipe_params)
 
      case Repo.update(changeset) do
@@ -876,7 +860,7 @@ index 22554ea..f317b59 100644
 
    def delete(conn, %{"id" => id}) do
 -    recipe = Repo.get!(Recipe, id)
-+    recipe = Repo.get!(assoc(conn.assigns.current_user, :recipes), id)
++    recipe = assoc(conn.assigns.current_user, :recipes) |> Repo.get!(id)
 
      # Here we use delete! (with a bang) because we expect
      # it to always work (and if it does not, it will raise).
@@ -888,15 +872,13 @@ diff --git a/test/controllers/recipe_controller_test.exs b/test/controllers/reci
 index d93bbd1..190ede9 100644
 --- a/test/controllers/recipe_controller_test.exs
 +++ b/test/controllers/recipe_controller_test.exs
-@@ -56,30 +56,30 @@ defmodule TvRecipe.RecipeControllerTest do
+@@ -56,30 +56,30 @@ defmodule TvRecipeWeb.RecipeControllerTest do
    end
 
-   @tag logged_in: true
 -  test "renders form for editing chosen resource", %{conn: conn} do
 -    recipe = Repo.insert! %Recipe{}
    end
 
-   @tag logged_in: true
 -  test "renders form for editing chosen resource", %{conn: conn} do
 -    recipe = Repo.insert! %Recipe{}
 +  test "renders form for editing chosen resource", %{conn: conn, user: user} do
@@ -905,7 +887,6 @@ index d93bbd1..190ede9 100644
      assert html_response(conn, 200) =~ "Edit recipe"
    end
 
-   @tag logged_in: true
 -  test "updates chosen resource and redirects when data is valid", %{conn: conn} do
 -    recipe = Repo.insert! %Recipe{}
 +  test "updates chosen resource and redirects when data is valid", %{conn: conn, user: user} do
@@ -915,7 +896,6 @@ index d93bbd1..190ede9 100644
      assert Repo.get_by(Recipe, @valid_attrs)
    end
 
-   @tag logged_in: true
 -  test "does not update chosen resource and renders errors when data is invalid", %{conn: conn} do
 -    recipe = Repo.insert! %Recipe{}
 +  test "does not update chosen resource and renders errors when data is invalid", %{conn: conn, user: user} do
@@ -924,7 +904,6 @@ index d93bbd1..190ede9 100644
      assert html_response(conn, 200) =~ "Edit recipe"
    end
 
-   @tag logged_in: true
 -  test "deletes chosen resource", %{conn: conn} do
 -    recipe = Repo.insert! %Recipe{}
 +  test "deletes chosen resource", %{conn: conn, user: user} do
@@ -950,7 +929,9 @@ index 4dbc961..2e2b518 100644
    use TvRecipe.ModelCase
 
 -  alias TvRecipe.{Recipe}
-+  alias TvRecipe.{Repo, User, Recipe}
++  alias TvRecipe.Repo
++  alias TvRecipe.Users.User
++  alias TvRecipe.Recipes.Recipe
 
    @valid_attrs %{content: "some content", episode: 42, name: "some content", season: 42, title: "some content"}
    @invalid_attrs %{}

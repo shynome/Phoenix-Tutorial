@@ -812,7 +812,7 @@ diff --git a/lib/tv_recipe_web/router.ex b/lib/tv_recipe_web/router.ex
 index e0406d2..1265c86 100644
 --- a/lib/tv_recipe_web/router.ex
 +++ b/lib/tv_recipe_web/router.ex
-@@ -7,6 +7,7 @@ defmodule TvRecipe.Router do
+@@ -7,6 +7,7 @@ defmodule TvRecipeWeb.Router do
      plug :fetch_flash
      plug :protect_from_forgery
      plug :put_secure_browser_headers

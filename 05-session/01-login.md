@@ -491,7 +491,8 @@ index 66a5304..40ad02f 100644
 @@ -1,7 +1,20 @@
  defmodule TvRecipeWeb.SessionController do
    use TvRecipeWeb, :controller
-+  alias TvRecipe.{Repo, User}
++  alias TvRecipe.Repo
++  alias TvRecipe.Users.User
 
    def new(conn, _params) do
      render conn, "new.html"

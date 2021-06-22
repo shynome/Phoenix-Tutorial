@@ -238,7 +238,7 @@ index ac6894e..e11df40 100644
   end
 
 ```
-我们根据 `describe` 设置不同的 `setup`：需要用户登录则添加 `setup [:login_user]`, 不需要则不添加或留空 `setup [:login_user]`
+我们根据 `describe` 设置不同的 `setup`：需要用户登录则添加 `setup [:login_user]`, 不需要则不添加或留空 `setup []`
 
 现在运行测试：
 

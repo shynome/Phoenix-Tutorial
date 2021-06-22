@@ -20,7 +20,7 @@
 让我们加上试试：
 
 ```elixir
-diff --git a/web/models/user.ex b/web/models/user.ex
+diff --git a/tv_recipe/users/user.ex b/tv_recipe/users/user.ex
 index b7713a0..87ce321 100644
 --- a/web/models/user.ex
 +++ b/web/models/user.ex
@@ -43,7 +43,7 @@ index b7713a0..87ce321 100644
 
 又或者，我们可以用 Phoenix 生成的测试文件来验证。
 
-打开 `test/models/user_test.exs` 文件，默认内容如下：
+打开 `test/tv_recipe/users_test.exs` 文件，默认内容如下：
 
 ```elixir
 defmodule TvRecipe.UserTest do
@@ -68,10 +68,10 @@ end
 文件中有两个变量，`@valid_attrs` 表示有效的 `User` 属性，`@invalid_attrs` 表示无效的 `User` 属性，我们按本章开头拟定的规则修改 `@valid_attrs`：
 
 ```elixir
-diff --git a/test/models/user_test.exs b/test/models/user_test.exs
+diff --git a/test/tv_recipe/users_test.exs b/test/tv_recipe/users_test.exs
 index 1d5494f..7c73207 100644
---- a/test/models/user_test.exs
-+++ b/test/models/user_test.exs
+--- a/test/tv_recipe/users_test.exs
++++ b/test/tv_recipe/users_test.exs
 @@ -3,7 +3,7 @@ defmodule TvRecipe.UserTest do
 
    alias TvRecipe.User
@@ -83,13 +83,13 @@ index 1d5494f..7c73207 100644
    test "changeset with valid attributes" do
 ```
 
-接着，在 `user_test.exs` 文件中添加一个新测试：
+接着，在 `users_test.exs` 文件中添加一个新测试：
 
 ```elixir
 diff --git a/test/models/user_test.exs b/test/models/user_test.exs
 index 7c73207..4c174ab 100644
---- a/test/models/user_test.exs
-+++ b/test/models/user_test.exs
+--- a/test/tv_recipe/users_test.exs
++++ b/test/tv_recipe/users_test.exs
 @@ -15,4 +15,9 @@ defmodule TvRecipe.UserTest do
      changeset = User.changeset(%User{}, @invalid_attrs)
      refute changeset.valid?
@@ -97,20 +97,28 @@ index 7c73207..4c174ab 100644
 +
 +  test "username should not be blank" do
 +    attrs = %{@valid_attrs | username: ""}
-+    assert {:username, "请填写"} in errors_on(%User{}, attrs)
++    assert %{username: ["请填写"] } = errors_on(%User{}, attrs)
 +  end
  end
 ```
 
 这里，`%{@valid_attrs | username: ""}` 是 Elixir 更新映射（Map）的一个方法。
 
-至于 `errors_on` 函数，它定义在 `tv_recipe/test/support/model_case.ex` 文件中：
+至于 `errors_on/2` 函数，它需要新增在 `tv_recipe/test/support/model_case.ex` 文件中：
 
 ```elixir
-def errors_on(struct, data) do
-  struct.__struct__.changeset(struct, data)
-  |> Ecto.Changeset.traverse_errors(&TvRecipe.ErrorHelpers.translate_error/1)
-  |> Enum.flat_map(fn {key, errors} -> for msg <- errors, do: {key, msg} end)
+  def errors_on(changeset) do
+    Ecto.Changeset.traverse_errors(changeset, fn {message, opts} ->
+      Regex.replace(~r"%{(\w+)}", message, fn _, key ->
+        opts |> Keyword.get(String.to_existing_atom(key), key) |> to_string()
+      end)
+    end)
+  end
++
++  def errors_on(struct, attrs) do
++    changeset = struct.__struct__.changeset(struct, attrs)
++    errors_on(changeset)
++  end
 end
 ```
 它检查给定数据中的错误消息，并返回给我们。
@@ -118,7 +126,7 @@ end
 现在在命令行下运行：
 
 ```bash
-$ mix test test/models/user_test.exs
+$ mix test test/tv_recipe/users_test.exs
 ```
 结果如下：
 

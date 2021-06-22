@@ -107,13 +107,13 @@ index 7c73207..4c174ab 100644
 至于 `errors_on/2` 函数，它需要新增在 `tv_recipe/test/support/model_case.ex` 文件中：
 
 ```elixir
-  def errors_on(changeset) do
-    Ecto.Changeset.traverse_errors(changeset, fn {message, opts} ->
-      Regex.replace(~r"%{(\w+)}", message, fn _, key ->
-        opts |> Keyword.get(String.to_existing_atom(key), key) |> to_string()
-      end)
-    end)
-  end
+   def errors_on(changeset) do
+     Ecto.Changeset.traverse_errors(changeset, fn {message, opts} ->
+       Regex.replace(~r"%{(\w+)}", message, fn _, key ->
+         opts |> Keyword.get(String.to_existing_atom(key), key) |> to_string()
+       end)
+     end)
+   end
 +
 +  def errors_on(struct, attrs) do
 +    changeset = struct.__struct__.changeset(struct, attrs)

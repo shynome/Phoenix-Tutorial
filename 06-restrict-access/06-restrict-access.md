@@ -210,9 +210,9 @@ index ac6894e..e11df40 100644
  defmodule TvRecipeWeb.UserControllerTest do
    use TvRecipe.ConnCase
 
--  alias TvRecipe.User
-+  alias TvRecipe.Repo
-+  alias TvRecipe.Users.User
+   alias TvRecipe.Repo
+   alias TvRecipe.Users
+   alias TvRecipe.Users.User
    @valid_attrs %{email: "chenxsan@gmail.com", password: "some content", username: "chenxsan"}
    @invalid_attrs %{}
 

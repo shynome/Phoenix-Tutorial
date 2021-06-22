@@ -45,22 +45,22 @@ $ mix do deps.get, compile
 ```
 该命令从远程下载了我们新增的 `comeonin` 依赖并编译。
 
-那么，怎么确认 `comeonin` 安装成功？之前，我们一直是用 `mix phoenix.server` 命令来启动服务器的，接下来，我们要换一种启动方式：
+那么，怎么确认 `comeonin` 安装成功？之前，我们一直是用 `mix phx.server` 命令来启动服务器的，接下来，我们要换一种启动方式：
 
 ```bash
-$ iex -S mix phoenix.server
+$ iex -S mix phx.server
 ```
 区别在哪？我们来看看后者启动后的结果：
 
 ```
-$ iex -S mix phoenix.server
+$ iex -S mix phx.server
 Erlang/OTP 19 [erts-8.2] [source] [64-bit] [smp:4:4] [async-threads:10] [hipe] [kernel-poll:false] [dtrace]
 
 [info] Running TvRecipe.Endpoint with Cowboy using http://localhost:4000
 Interactive Elixir (1.4.0) - press Ctrl+C to exit (type h() ENTER for help)
 iex(1)> 25 Jan 09:53:09 - info: compiled 6 files into 2 files, copied 3 in 2.1 sec
 ```
-看到区别了么？我们用 `iex -S mix phoenix.server` 启动后，可以使用 Elixir 的 [`iex`](http://elixir-lang.org/docs/stable/iex/IEx.html)。
+看到区别了么？我们用 `iex -S mix phx.server` 启动后，可以使用 Elixir 的 [`iex`](http://elixir-lang.org/docs/stable/iex/IEx.html)。
 
 比如，我们可以输入 `Com` 然后按 Tab 键：
 

@@ -125,7 +125,7 @@ Generated tv_recipe app
 11:08:12.067 [info]  == Migrated in 0.0s
 ```
 
-操作完上述两步后，因为某些编辑器可能导致的代码重载问题，你需要重启 Phoenix 服务器 - 按两次 Ctrl-C，然后重新执行 `mix phoenix.server`。
+操作完上述两步后，因为某些编辑器可能导致的代码重载问题，你需要重启 Phoenix 服务器 - 按两次 Ctrl-C，然后重新执行 `mix phx.server`。
 
 之后在浏览器中打开网址 `http://localhost:4000/users/new`：
 

@@ -19,10 +19,11 @@ index a71d654..3320fc8 100644
 +++ b/mix.exs
 @@ -19,7 +19,7 @@ defmodule TvRecipe.Mixfile do
    def application do
-     [mod: {TvRecipe, []},
-      applications: [:phoenix, :phoenix_pubsub, :phoenix_html, :cowboy, :logger, :gettext,
--                    :phoenix_ecto, :postgrex]]
-+                    :phoenix_ecto, :postgrex, :comeonin]]
+     [
+       mod: {TvRecipe.Application, []},
+-      extra_applications: [:logger, :runtime_tools]
++      extra_applications: [:logger, :runtime_tools, :comeonin]
+     ]
    end
 
    # Specifies which paths to compile per environment.
@@ -30,9 +31,9 @@ index a71d654..3320fc8 100644
       {:phoenix_html, "~> 2.6"},
       {:phoenix_live_reload, "~> 1.0", only: :dev},
       {:gettext, "~> 0.11"},
--     {:cowboy, "~> 1.0"}]
-+     {:cowboy, "~> 1.0"},
-+     {:comeonin, "~> 3.0"}]
+-     {:plug_cowboy, "~> 2.0"}
++     {:plug_cowboy, "~> 2.0"},
++     {:comeonin, "~> 3.0"}
    end
    ```
 

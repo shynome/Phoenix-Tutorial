@@ -662,7 +662,7 @@ index 82259d8..2d39904 100644
            <ul class="nav nav-pills pull-right">
              <li><a href="http://www.phoenixframework.org/docs">Get Started</a></li>
 +            <%= if @current_user do %>
-+              <li><%= link @current_user.username, to: user_path(@conn, :show, @current_user) %></li>
++              <li><%= link @current_user.username, to: Routes.user_path(@conn, :show, @current_user) %></li>
 +            <% end %>
            </ul>
          </nav>

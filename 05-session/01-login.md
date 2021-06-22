@@ -10,7 +10,7 @@ Don't panic，错误是指引我们成功的路灯。
 
 ## 添加路由
 
-首先在 `test/controllers` 目录下新建一个 `session_controller_test.exs` 文件：
+首先在 `test/tv_recipe_web/controllers` 目录下新建一个 `session_controller_test.exs` 文件：
 
 ```elixir
 defmodule TvRecipeWeb.SessionControllerTest do

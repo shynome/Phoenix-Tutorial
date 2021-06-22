@@ -104,7 +104,7 @@ index 7c73207..4c174ab 100644
 
 这里，`%{@valid_attrs | username: ""}` 是 Elixir 更新映射（Map）的一个方法。
 
-至于 `errors_on/2` 函数，它需要新增在 `tv_recipe/test/support/data_case.ex` 文件中：
+至于 `errors_on/2` 函数，它需要新增在 `test/support/data_case.ex` 文件中：
 
 ```elixir
    def errors_on(changeset) do

@@ -735,7 +735,7 @@ index 0000000..84b17f7
 --- /dev/null
 +++ b/web/controllers/auth.ex
 @@ -0,0 +1,16 @@
-+defmodule TvRecipe.Auth do
++defmodule TvRecipeWeb.Auth do
 +  import Plug.Conn
 +
 +  @doc """

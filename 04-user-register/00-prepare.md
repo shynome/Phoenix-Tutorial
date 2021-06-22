@@ -55,19 +55,22 @@ $ mix phx.gen.html Users User users username:string:unique email:string:unique p
 执行命令后的输出如下：
 
 ```bash
-* creating web/controllers/user_controller.ex
-* creating web/templates/user/edit.html.eex
-* creating web/templates/user/form.html.eex
-* creating web/templates/user/index.html.eex
-* creating web/templates/user/new.html.eex
-* creating web/templates/user/show.html.eex
-* creating web/views/user_view.ex
-* creating test/controllers/user_controller_test.exs
-* creating web/models/user.ex
-* creating test/models/user_test.exs
+* creating lib/tv_recipe_web/controllers/user_controller.ex
+* creating lib/tv_recipe_web/templates/user/edit.html.eex
+* creating lib/tv_recipe_web/templates/user/form.html.eex
+* creating lib/tv_recipe_web/templates/user/index.html.eex
+* creating lib/tv_recipe_web/templates/user/new.html.eex
+* creating lib/tv_recipe_web/templates/user/show.html.eex
+* creating lib/tv_recipe_web/views/user_view.ex
+* creating test/lib/tv_recipe_web/controllers/user_controller_test.exs
+* creating lib/tv_recipe/users/user.ex
 * creating priv/repo/migrations/20170123145857_create_user.exs
+* creating lib/tv_recipe/users.ex
+* injecting lib/tv_recipe/users.ex
+* creating test/lib/tv_recipe/users_test.exs
+* injecting test/tv_recipe/users_test.exs
 
-Add the resource to your browser scope in web/router.ex:
+Add the resource to your browser scope in lib/tv_recipe_web/router.ex:
 
     resources "/users", UserController
 

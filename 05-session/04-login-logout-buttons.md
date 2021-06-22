@@ -88,7 +88,7 @@ diff --git a/web/controllers/auth.ex b/web/controllers/auth.ex
 index 994112d..e298b68 100644
 --- a/web/controllers/auth.ex
 +++ b/web/controllers/auth.ex
-@@ -15,4 +15,10 @@ defmodule TvRecipe.Auth do
+@@ -15,4 +15,10 @@ defmodule TvRecipeWeb.Auth do
      assign(conn, :current_user, user)
    end
 
@@ -111,7 +111,7 @@ index 0c2eb0a..6f29ce0 100644
 -        |> put_session(:user_id, user.id)
          |> put_flash(:info, "欢迎你")
 -        |> configure_session(renew: true)
-+        |> TvRecipe.Auth.login(user)
++        |> TvRecipeWeb.Auth.login(user)
          |> redirect(to: page_path(conn, :index))
        # 用户存在，但密码错误
        user ->
@@ -125,7 +125,7 @@ index 8b9b38b..b9234b1 100644
          |> put_flash(:info, "User created successfully.")
 -        |> put_session(:user_id, user.id)
 -        |> configure_session(renew: true)
-+        |> TvRecipe.Auth.login(user)
++        |> TvRecipeWeb.Auth.login(user)
          |> redirect(to: page_path(conn, :index))
        {:error, changeset} ->
          render(conn, "new.html", changeset: changeset)

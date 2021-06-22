@@ -31,11 +31,11 @@ index 6c87a08..b13f370 100644
 +++ b/web/templates/layout/app.html.eex
 @@ -20,6 +20,9 @@
              <%= if @current_user do %>
-               <li><%= link @current_user.username, to: user_path(@conn, :show, @current_user) %></li>
-               <li><%= link "退出", to: session_path(@conn, :delete, @current_user), method: "delete" %></li>
+               <li><%= link @current_user.username, to: Routes.user_path(@conn, :show, @current_user) %></li>
+               <li><%= link "退出", to: Routes.session_path(@conn, :delete, @current_user), method: "delete" %></li>
 +            <% else %>
-+              <li><%= link "登录", to: session_path(@conn, :new) %></li>
-+              <li><%= link "注册", to: user_path(@conn, :new) %></li>
++              <li><%= link "登录", to: Routes.session_path(@conn, :new) %></li>
++              <li><%= link "注册", to: Routes.user_path(@conn, :new) %></li>
              <% end %>
            </ul>
          </nav>

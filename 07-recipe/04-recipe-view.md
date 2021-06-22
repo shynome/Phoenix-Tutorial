@@ -164,7 +164,7 @@ index a1b75c6..7bd839c 100644
 +++ b/test/controllers/user_controller_test.exs
 @@ -29,6 +29,7 @@ defmodule TvRecipe.UserControllerTest do
      # 注册后自动登录，检查首页是否包含用户名
-     conn = get conn, page_path(conn, :index)
+     conn = get conn, Routes.page_path(conn, :index)
      assert html_response(conn, 200) =~ Map.get(@valid_attrs, :username)
 +    assert html_response(conn, 200) =~ "菜谱"
    end

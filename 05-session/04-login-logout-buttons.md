@@ -14,11 +14,11 @@ index 969662a..98fbb5a 100644
      # 插入新用户
      user = Repo.insert! user_changeset
 +    # 未登录情况下访问首页，应带有登录/注册文字
-+    conn = get conn, page_path(conn, :index)
++    conn = get conn, Routes.page_path(conn, :index)
 +    assert html_response(conn, 200) =~ "登录"
 +    assert html_response(conn, 200) =~ "注册"
      # 用户登录
-     conn = post conn, session_path(conn, :create), session: @valid_user_attrs
+     conn = post conn, Routes.session_path(conn, :create), session: @valid_user_attrs
      # 显示“欢迎你”的消息
 ```
 
@@ -63,7 +63,7 @@ index 6ac524c..0c2eb0a 100644
          |> put_session(:user_id, user.id)
          |> put_flash(:info, "欢迎你")
 +        |> configure_session(renew: true)
-         |> redirect(to: page_path(conn, :index))
+         |> redirect(to: Routes.page_path(conn, :index))
        # 用户存在，但密码错误
        user ->
 diff --git a/web/controllers/user_controller.ex b/web/controllers/user_controller.ex
@@ -75,7 +75,7 @@ index 8d8a6f5..8b9b38b 100644
          |> put_flash(:info, "User created successfully.")
          |> put_session(:user_id, user.id)
 +        |> configure_session(renew: true)
-         |> redirect(to: page_path(conn, :index))
+         |> redirect(to: Routes.page_path(conn, :index))
        {:error, changeset} ->
          render(conn, "new.html", changeset: changeset)
 ```
@@ -112,7 +112,7 @@ index 0c2eb0a..6f29ce0 100644
          |> put_flash(:info, "欢迎你")
 -        |> configure_session(renew: true)
 +        |> TvRecipeWeb.Auth.login(user)
-         |> redirect(to: page_path(conn, :index))
+         |> redirect(to: Routes.page_path(conn, :index))
        # 用户存在，但密码错误
        user ->
 diff --git a/web/controllers/user_controller.ex b/web/controllers/user_controller.ex
@@ -126,7 +126,7 @@ index 8b9b38b..b9234b1 100644
 -        |> put_session(:user_id, user.id)
 -        |> configure_session(renew: true)
 +        |> TvRecipeWeb.Auth.login(user)
-         |> redirect(to: page_path(conn, :index))
+         |> redirect(to: Routes.page_path(conn, :index))
        {:error, changeset} ->
          render(conn, "new.html", changeset: changeset)
 ```

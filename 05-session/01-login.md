@@ -22,7 +22,7 @@ end
 
 ```elixir
   test "renders form for new sessions", %{conn: conn} do
-    conn = get conn, session_path(conn, :new)
+    conn = get conn, Routes.session_path(conn, :new)
     # 200 响应，页面上带有“登录”
     assert html_response(conn, 200) =~ "登录"
   end
@@ -446,7 +446,7 @@ index 0372448..6835e40 100644
 +  @valid_user_attrs %{email: "chenxsan@gmail.com", username: "chenxsan", password: String.duplicate("a", 6)}
 +
    test "renders form for new sessions", %{conn: conn} do
-     conn = get conn, session_path(conn, :new)
+     conn = get conn, Routes.session_path(conn, :new)
      # 200 响应，页面上带有“登录”
      assert html_response(conn, 200) =~ "登录"
    end
@@ -456,11 +456,11 @@ index 0372448..6835e40 100644
 +    # 插入新用户
 +    Repo.insert! user_changeset
 +    # 用户登录
-+    conn = post conn, session_path(conn, :create), session: @valid_user_attrs
++    conn = post conn, Routes.session_path(conn, :create), session: @valid_user_attrs
 +    # 显示“欢迎你”的消息
 +    assert get_flash(conn, :info) == "欢迎你"
 +    # 重定向到主页
-+    assert redirected_to(conn) == page_path(conn, :index)
++    assert redirected_to(conn) == Routes.page_path(conn, :index)
 +  end
  end
 ```
@@ -504,7 +504,7 @@ index 66a5304..40ad02f 100644
 +      user && Comeonin.Bcrypt.checkpw(password, user.password_hash) ->
 +        conn
 +        |> put_flash(:info, "欢迎你")
-+        |> redirect(to: page_path(conn, :index))
++        |> redirect(to: Routes.page_path(conn, :index))
 +    end
 +  end
  end
@@ -542,7 +542,7 @@ index cc35f0a..dd5bc02 100644
 +++ b/test/tv_recipe_web/controllers/session_controller_test.exs
 @@ -21,4 +21,24 @@ defmodule TvRecipeWeb.SessionControllerTest do
      # 重定向到主页
-     assert redirected_to(conn) == page_path(conn, :index)
+     assert redirected_to(conn) == Routes.page_path(conn, :index)
    end
 +
 +  test "redirect to session new when email exists but with wrong password", %{conn: conn} do
@@ -550,7 +550,7 @@ index cc35f0a..dd5bc02 100644
 +    # 插入新用户
 +    Repo.insert! user_changeset
 +    # 用户登录
-+    conn = post conn, session_path(conn, :create), session: %{@valid_user_attrs | password: ""}
++    conn = post conn, Routes.session_path(conn, :create), session: %{@valid_user_attrs | password: ""}
 +    # 显示“用户名或密码错误”
 +    assert get_flash(conn, :error) == "用户名或密码错误"
 +    # 返回登录页
@@ -558,7 +558,7 @@ index cc35f0a..dd5bc02 100644
 +  end
 +
 +  test "redirect to session new when nobody login", %{conn: conn} do
-+    conn = post conn, session_path(conn, :create), session: @valid_user_attrs
++    conn = post conn, Routes.session_path(conn, :create), session: @valid_user_attrs
 +    # 显示“用户名或密码错误”
 +    assert get_flash(conn, :error) == "用户名或密码错误"
 +    # 返回登录页
@@ -576,7 +576,7 @@ index 40ad02f..400a33c 100644
 @@ -15,6 +15,18 @@ defmodule TvRecipeWeb.SessionController do
          conn
          |> put_flash(:info, "欢迎你")
-         |> redirect(to: page_path(conn, :index))
+         |> redirect(to: Routes.page_path(conn, :index))
 +      # 用户存在，但密码错误
 +      user ->
 +        conn
@@ -632,10 +632,10 @@ index dd5bc02..52e8801 100644
      # 重定向到主页
      assert redirected_to(conn) == Routes.page_path(conn, :index)
 +    # 读取首页，页面上包含已登录用户的用户名
-+    conn = get conn, page_path(conn, :index)
++    conn = get conn, Routes.page_path(conn, :index)
 +    assert html_response(conn, 200) =~ Map.get(@valid_user_attrs, :username)
 +    # 读取用户页，页面上包含已登录用户的用户名
-+    conn = get conn, user_path(conn, :show, user)
++    conn = get conn, Routes.user_path(conn, :show, user)
 +    assert html_response(conn, 200) =~ Map.get(@valid_user_attrs, :username)
    end
 ```
@@ -763,7 +763,7 @@ index 0000000..84b17f7
       user && Comeonin.Bcrypt.checkpw(password, user.password_hash) ->
         conn
         |> put_flash(:info, "欢迎你")
-        |> redirect(to: page_path(conn, :index))
+        |> redirect(to: Routes.page_path(conn, :index))
 ```
 
 用户登录时，我们根据他们提供的邮箱取得数据库中的用户，然后比对密码，如果密码正确，我们就得到了 `user`。
@@ -785,7 +785,7 @@ index 400a33c..b5218f2 100644
          conn
 +        |> put_session(:user_id, user.id)
          |> put_flash(:info, "欢迎你")
-         |> redirect(to: page_path(conn, :index))
+         |> redirect(to: Routes.page_path(conn, :index))
 ```
 然后我们就能在 `auth.ex` 文件中读取 session 中的 `:user_id` 了：
 

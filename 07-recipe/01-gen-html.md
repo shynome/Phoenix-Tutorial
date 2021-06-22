@@ -46,7 +46,7 @@ diff --git a/web/router.ex b/web/router.ex
 index e0811dc..a6d7cd5 100644
 --- a/web/router.ex
 +++ b/web/router.ex
-@@ -20,6 +20,7 @@ defmodule TvRecipe.Router do
+@@ -20,6 +20,7 @@ defmodule TvRecipeWeb.Router do
      get "/", PageController, :index
      resources "/users", UserController, except: [:index, :delete]
      resources "/sessions", SessionController, only: [:new, :create, :delete]
@@ -55,6 +55,8 @@ index e0811dc..a6d7cd5 100644
 ```
 
 但请不要着急执行 `mix ecto.migrate`，我们有几个需要调整的地方：
+
+注: 运行了的话可使用 `mix ecto.rollback` 回撤修改
 
 1. 新建的 `priv/repo/migrations/20170206013306_create_recipe.exs` 文件中，有如下一句代码：
 

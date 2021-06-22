@@ -442,7 +442,8 @@ index 0372448..6835e40 100644
  defmodule TvRecipeWeb.SessionControllerTest do
    use TvRecipe.ConnCase
 
-+  alias TvRecipe.{Repo, User}
++  alias TvRecipe.Repo
++  alias TvRecipe.Users.User
 +  @valid_user_attrs %{email: "chenxsan@gmail.com", username: "chenxsan", password: String.duplicate("a", 6)}
 +
    test "renders form for new sessions", %{conn: conn} do

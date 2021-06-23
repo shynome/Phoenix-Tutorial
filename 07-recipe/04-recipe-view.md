@@ -56,7 +56,7 @@ index be4148a..8174c14 100644
 +
 +  test "render index.html", %{conn: conn} do
 +    recipes = [struct(Recipe, @recipe1), struct(Recipe, @recipe2)]
-+    content = render_to_string(TvRecipe.RecipeView, "index.html", conn: conn, recipes: recipes)
++    content = render_to_string(TvRecipeWeb.RecipeView, "index.html", conn: conn, recipes: recipes)
 +    # 页面上包含标题 Listing recipes
 +    assert String.contains?(content, "Listing recipes")
 +    for recipe <- recipes do

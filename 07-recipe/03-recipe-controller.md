@@ -323,10 +323,10 @@ index 520d986..0f023d3 100644
 注意，我们并非只是简单的移动文本到 `auth.ex` 文件中。在 `auth.ex` 头部，我们还引入了两行代码，并调整了两个 plug：
 
 ```elixir
-import Phoenix.Controller
-alias TvRecipe.Router.Helpers
+  import Phoenix.Controller
+  use TvRecipeWeb, :controller
 ```
-`import Phoenix.Controller` 导入 `put_flash` 等方法，而 `use MenuWeb, :controller` 让我们在 `auth.ex` 中可以快速书写各种路径。
+`import Phoenix.Controller` 导入 `put_flash` 等方法，而 `use TvRecipeWeb, :controller` 让我们在 `auth.ex` 中可以快速书写各种路径。
 
 接着在 `web.ex` 文件中 `import` 它：
 

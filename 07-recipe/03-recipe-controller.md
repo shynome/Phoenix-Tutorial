@@ -876,44 +876,16 @@ index d93bbd1..190ede9 100644
 --- a/test/controllers/recipe_controller_test.exs
 +++ b/test/controllers/recipe_controller_test.exs
 @@ -56,30 +56,30 @@ defmodule TvRecipeWeb.RecipeControllerTest do
-   end
+-defp create_recipe(%{attrs: attrs} = context) do
++defp create_recipe(%{conn: conn, attrs: attrs} = context) do
+-  recipe = fixture(attrs)
++  conn = post conn, Routes.recipe_path(conn, :create), recipe: attrs
++  assert %{id: id} = redirected_params(conn)
++  recipe = Recipes.get_recipe!(id)
 
--  test "renders form for editing chosen resource", %{conn: conn} do
--    recipe = Repo.insert! %Recipe{}
-   end
-
--  test "renders form for editing chosen resource", %{conn: conn} do
--    recipe = Repo.insert! %Recipe{}
-+  test "renders form for editing chosen resource", %{conn: conn, user: user} do
-+    recipe = Repo.insert! %Recipe{user_id: user.id}
-     conn = get conn, Routes.recipe_path(conn, :edit, recipe)
-     assert html_response(conn, 200) =~ "Edit recipe"
-   end
-
--  test "updates chosen resource and redirects when data is valid", %{conn: conn} do
--    recipe = Repo.insert! %Recipe{}
-+  test "updates chosen resource and redirects when data is valid", %{conn: conn, user: user} do
-+    recipe = Repo.insert! %Recipe{user_id: user.id}
-     conn = put conn, Routes.recipe_path(conn, :update, recipe), recipe: @valid_attrs
-     assert redirected_to(conn) == Routes.recipe_path(conn, :show, recipe)
-     assert Repo.get_by(Recipe, @valid_attrs)
-   end
-
--  test "does not update chosen resource and renders errors when data is invalid", %{conn: conn} do
--    recipe = Repo.insert! %Recipe{}
-+  test "does not update chosen resource and renders errors when data is invalid", %{conn: conn, user: user} do
-+    recipe = Repo.insert! %Recipe{user_id: user.id}
-     conn = put conn, Routes.recipe_path(conn, :update, recipe), recipe: @invalid_attrs
-     assert html_response(conn, 200) =~ "Edit recipe"
-   end
-
--  test "deletes chosen resource", %{conn: conn} do
--    recipe = Repo.insert! %Recipe{}
-+  test "deletes chosen resource", %{conn: conn, user: user} do
-+    recipe = Repo.insert! %Recipe{user_id: user.id}
-     conn = delete conn, Routes.recipe_path(conn, :delete, recipe)
-     assert redirected_to(conn) == Routes.recipe_path(conn, :index)
-     refute Repo.get(Recipe, recipe.id)
+   context
+   |> Map.put(:recipe, recipe)
+ end
 ```
 
 ## 数据的完整性

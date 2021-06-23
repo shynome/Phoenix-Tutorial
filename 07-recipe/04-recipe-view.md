@@ -16,8 +16,8 @@
 首先在 `test/views` 目录下新建一个 `recipe_view_test.exs` 文件，然后准备好如下内容：
 
 ```elixir
-defmodule TvRecipe.RecipeViewTest do
-  use TvRecipe.ConnCase, async: true
+defmodule TvRecipeWeb.RecipeViewTest do
+  use TvRecipeWeb.ConnCase, async: true
 
   # Bring render/3 and render_to_string/3 for testing custom views
   import Phoenix.View

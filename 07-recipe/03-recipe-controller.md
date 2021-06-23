@@ -21,12 +21,12 @@ index 646ebf2..51fdeab 100644
 +  alias TvRecipe.Repo
 +  alias TvRecipe.Users.User
 +  alias TvRecipe.Recipes.Recipe
-   @valid_attrs %{content: "some content", episode: 42, name: "some content", season: 42, title: "some content"}
+   @create_attrs %{content: "some content", episode: 42, name: "some content", season: 42, title: "some content"}
    @invalid_attrs %{}
 
 +  defp init_attrs(%{conn: conn} = context) do
 +     user = Repo.insert! User.changeset(%User{}, %{email: "chenxsan@gmail.com", username: "chenxsan", password: String.duplicate("1", 6)})
-+     attrs = Map.put(@valid_attrs, :user_id, user.id)
++     attrs = Map.put(@create_attrs, :user_id, user.id)
 +
 +     context
 +     |> Map.put :attrs, attrs

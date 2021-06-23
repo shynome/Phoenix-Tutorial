@@ -606,6 +606,16 @@ index c74b492..967b7bc 100644
 @@ -9,12 +9,18 @@ defmodule TvRecipe.RecipeController do
    end
 
+   def index(conn, _params) do
+-    recipes = Recipes.list_recipes()
++    recipes =
++      conn.assigns.current_user
++      |> assoc(:recipes)
++      |> TvRecipe.Repo.all()
+ 
+     render(conn, "index.html", recipes: recipes)
+   end
+
    def new(conn, _params) do
 -    changeset = Recipe.changeset(%Recipe{})
 +    changeset =

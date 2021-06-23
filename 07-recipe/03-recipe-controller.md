@@ -25,8 +25,6 @@ index 923a4a9..0548c85 100644
    @update_attrs %{content: "some updated content", episode: 43, name: "some updated name", season: 43, title: "some updated title"}
    @invalid_attrs %{content: nil, episode: nil, name: nil, season: nil, title: nil}
  
--  def fixture(:recipe) do
--    {:ok, recipe} = Recipes.create_recipe(@create_attrs)
 +  defp init_attrs (%{conn: conn} = context) do
 +     user = Repo.insert! User.changeset(%User{}, %{email: "chenxsan@gmail.com", username: "chenxsan", password: String.duplicate("1", 6)})
 +     attrs = Map.put(@create_attrs, :user_id, user.id)
@@ -35,8 +33,8 @@ index 923a4a9..0548c85 100644
 +     |> Map.put(:attrs, attrs)
 +  end
 +
-+  def fixture(attrs) do
-+    {:ok, recipe} = Recipes.create_recipe(attrs)
+   def fixture(attrs) do
+     {:ok, recipe} = Recipes.create_recipe(attrs)
      recipe
    end
  
@@ -49,10 +47,10 @@ index 923a4a9..0548c85 100644
    end
  
    describe "create recipe" do
--    test "redirects to show when data is valid", %{conn: conn} do
--      conn = post(conn, Routes.recipe_path(conn, :create), recipe: @create_attrs)
 +    setup [:init_attrs]
+-    test "redirects to show when data is valid", %{conn: conn} do
 +    test "redirects to show when data is valid", %{conn: conn, attrs: attrs} do
+-      conn = post(conn, Routes.recipe_path(conn, :create), recipe: @create_attrs)
 +      conn = post(conn, Routes.recipe_path(conn, :create), recipe: attrs)
  
        assert %{id: id} = redirected_params(conn)
@@ -89,11 +87,11 @@ index 923a4a9..0548c85 100644
    end
  
 -  defp create_recipe(_) do
--    recipe = fixture(:recipe)
--    %{recipe: recipe}
 +  defp create_recipe(%{attrs: attrs} = context) do
+-    recipe = fixture(:recipe)
 +    recipe = fixture(attrs)
 +
+-    %{recipe: recipe}
 +    context
 +    |> Map.put(:recipe, recipe)
    end

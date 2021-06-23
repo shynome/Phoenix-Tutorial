@@ -216,7 +216,7 @@ index e298b68..3dd3e7f 100644
  defmodule TvRecipeWeb.Auth do
    import Plug.Conn
 +  import Phoenix.Controller
-+  use MenuWeb, :controller
++  use TvRecipeWeb, :controller
 
    @doc """
    初始化选项

@@ -64,15 +64,16 @@ index e0811dc..a6d7cd5 100644
     add :user_id, references(:users, on_delete: :nothing)
     ```
     `on_delete` 决定 `recipe` 关联的 `user` 被删时，我们要如何处置 `recipe`。`:nothing` 表示不动 `recipe`，`:delete_all` 表示悉数删除，这里我们使用 `:delete_all`。
-2. 新建的 `web/models/recipe.ex` 文件中，有一句代码：
+2. 新建的 `lib/tv_recipe/recipes/recipe.ex` 文件中，有一句代码要替换：
 
     ```elixir
-    belongs_to :user, TvRecipe.User
+    -field :user_id, :id
+    +belongs_to :user, TvRecipe.Users.User
     ```
     因为 `Recipe` 与 `User` 的关系是双向的，所以我们需要在 `user.ex` 文件中增加一句：
     
     ```elixir
-    has_many :recipes, TvRecipe.Recipe
+    has_many :recipes, TvRecipe.Recipes.Recipe
     ```
 3. 我们需要在 `recipe.ex` 文件中给 `season` 与 `episode` 设置默认值：
 

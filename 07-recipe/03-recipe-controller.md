@@ -328,17 +328,14 @@ index 520d986..0f023d3 100644
 ```
 `import Phoenix.Controller` 导入 `put_flash` 等方法，而 `use TvRecipeWeb, :controller` 让我们在 `auth.ex` 中可以快速书写各种路径。
 
-接着在 `web.ex` 文件中 `import` 它：
+接着在 `user_controller.ex` 文件中 `import` 它：
 
 ```elixir
-diff --git a/web/web.ex b/web/web.ex
+diff --git a/web/controllers/user_controller.ex b/web/controllers/user_controller.ex
 index 50fd62e..9990080 100644
 --- a/web/web.ex
 +++ b/web/web.ex
 @@ -36,6 +36,7 @@ defmodule TvRecipe.Web do
-
-       import TvRecipe.Router.Helpers
-       import TvRecipe.Gettext
 +      import TvRecipeWeb.Auth, only: [login_require: 2, self_require: 2]
      end
    end
@@ -353,8 +350,9 @@ index 96a0276..c74b492 100644
 --- a/web/controllers/recipe_controller.ex
 +++ b/web/controllers/recipe_controller.ex
 @@ -1,6 +1,6 @@
- defmodule TvRecipe.RecipeController do
-   use TvRecipe.Web, :controller
+ defmodule TvRecipeWeb.RecipeController do
+   use TvRecipeWeb, :controller
+   import TvRecipeWeb.Auth, only: [login_require: 2]
 -
 +  plug :login_require
    alias TvRecipe.Recipe

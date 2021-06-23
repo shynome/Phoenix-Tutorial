@@ -920,7 +920,7 @@ index 4dbc961..2e2b518 100644
 +      |> Ecto.build_assoc(:recipes)
 +      |> Recipe.changeset(@valid_attrs)
 +    {:error, changeset} = Repo.insert changeset
-+    assert {:user_id, "does not exist"} in errors_on(changeset)
++    assert %{user_id: ["does not exist"]} = errors_on(changeset)
 +  end
 +
  end

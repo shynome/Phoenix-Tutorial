@@ -121,12 +121,12 @@ index 27f02ea..3a9630b 100644
    test "changeset with valid attributes" do
 @@ -40,4 +40,9 @@ defmodule TvRecipe.RecipeTest do
      attrs = %{@valid_attrs | content: ""}
-     assert {:content, "请填写"} in errors_on(%Recipe{}, attrs)
+     assert %{content: ["请填写"]} = errors_on(%Recipe{}, attrs)
    end
 +
 +  test "user_id is required" do
 +    attrs = %{@valid_attrs | user_id: nil}
-+    assert {:user_id, "请填写"} in errors_on(%Recipe{}, attrs)
++    assert %{user_id: ["请填写"]} = errors_on(%Recipe{}, attrs)
 +  end
  end
 ```

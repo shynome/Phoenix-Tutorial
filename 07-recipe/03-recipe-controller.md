@@ -9,73 +9,95 @@
 一个粗暴的解决办法，是在每个测试中新建一个用户，然后把用户 id 传给 `@valid_attrs`，但那样又要重复一堆代码，我们可以把新建用户部分抽取到 `setup` 中：
 
 ```elixir
-diff --git a/test/controllers/recipe_controller_test.exs b/test/controllers/recipe_controller_test.exs
-index 646ebf2..51fdeab 100644
---- a/test/controllers/recipe_controller_test.exs
-+++ b/test/controllers/recipe_controller_test.exs
-@@ -1,10 +1,16 @@
- defmodule TvRecipeWeb.RecipeControllerTest do
-   use TvRecipe.ConnCase
-
--  alias TvRecipe.Recipe
+diff --git a/test/tv_recipe_web/controllers/recipe_controller_test.exs b/test/tv_recipe_web/controllers/recipe_controller_test.exs
+index 923a4a9..0548c85 100644
+--- a/test/tv_recipe_web/controllers/recipe_controller_test.exs
++++ b/test/tv_recipe_web/controllers/recipe_controller_test.exs
+@@ -2,17 +2,29 @@ defmodule TvRecipeWeb.RecipeControllerTest do
+   use TvRecipeWeb.ConnCase
+ 
+   alias TvRecipe.Recipes
 +  alias TvRecipe.Repo
 +  alias TvRecipe.Users.User
 +  alias TvRecipe.Recipes.Recipe
-   @create_attrs %{content: "some content", episode: 42, name: "some content", season: 42, title: "some content"}
-   @invalid_attrs %{}
-
-+  defp init_attrs(%{conn: conn} = context) do
+ 
+   @create_attrs %{content: "some content", episode: 42, name: "some name", season: 42, title: "some title"}
+   @update_attrs %{content: "some updated content", episode: 43, name: "some updated name", season: 43, title: "some updated title"}
+   @invalid_attrs %{content: nil, episode: nil, name: nil, season: nil, title: nil}
+ 
+-  def fixture(:recipe) do
+-    {:ok, recipe} = Recipes.create_recipe(@create_attrs)
++  defp init_attrs (%{conn: conn} = context) do
 +     user = Repo.insert! User.changeset(%User{}, %{email: "chenxsan@gmail.com", username: "chenxsan", password: String.duplicate("1", 6)})
 +     attrs = Map.put(@create_attrs, :user_id, user.id)
 +
 +     context
-+     |> Map.put :attrs, attrs
-+  end
-
-describe "index" do
-+  setup [:init_attrs]
-   
-   test "lists all entries on index", %{conn: conn} do
-     conn = get conn, Routes.recipe_path(conn, :index)
-     assert html_response(conn, 200) =~ "Listing recipes"
-@@ -15,10 +21,10 @@ defmodule TvRecipeWeb.RecipeControllerTest do
-     assert html_response(conn, 200) =~ "New recipe"
-   end
-+    user = Repo.insert! User.changeset(%User{}, %{email: "chenxsan@gmail.com", username: "chenxsan", password: String.duplicate("1", 6)})
-+    attrs = Map.put(@valid_attrs, :user_id, user.id)
-+    {:ok, [attrs: attrs]}
++     |> Map.put(:attrs, attrs)
 +  end
 +
-   test "lists all entries on index", %{conn: conn} do
-     conn = get conn, Routes.recipe_path(conn, :index)
-     assert html_response(conn, 200) =~ "Listing recipes"
-@@ -15,10 +21,10 @@ defmodule TvRecipeWeb.RecipeControllerTest do
-     assert html_response(conn, 200) =~ "New recipe"
++  def fixture(attrs) do
++    {:ok, recipe} = Recipes.create_recipe(attrs)
+     recipe
    end
-
--  test "creates resource and redirects when data is valid", %{conn: conn} do
--    conn = post conn, Routes.recipe_path(conn, :create), recipe: @valid_attrs
-+  test "creates resource and redirects when data is valid", %{conn: conn, attrs: attrs} do
-+    conn = post conn, Routes.recipe_path(conn, :create), recipe: attrs
-     assert redirected_to(conn) == Routes.recipe_path(conn, :index)
--    assert Repo.get_by(Recipe, @valid_attrs)
-+    assert Repo.get_by(Recipe, attrs)
+ 
+   describe "index" do
++    setup [:init_attrs]
+     test "lists all recipes", %{conn: conn} do
+       conn = get(conn, Routes.recipe_path(conn, :index))
+       assert html_response(conn, 200) =~ "Listing Recipes"
+@@ -27,8 +39,9 @@ defmodule TvRecipeWeb.RecipeControllerTest do
    end
-
-   test "does not create resource and renders errors when data is invalid", %{conn: conn} do
-@@ -44,11 +50,11 @@ defmodule TvRecipeWeb.RecipeControllerTest do
-     assert html_response(conn, 200) =~ "Edit recipe"
+ 
+   describe "create recipe" do
+-    test "redirects to show when data is valid", %{conn: conn} do
+-      conn = post(conn, Routes.recipe_path(conn, :create), recipe: @create_attrs)
++    setup [:init_attrs]
++    test "redirects to show when data is valid", %{conn: conn, attrs: attrs} do
++      conn = post(conn, Routes.recipe_path(conn, :create), recipe: attrs)
+ 
+       assert %{id: id} = redirected_params(conn)
+       assert redirected_to(conn) == Routes.recipe_path(conn, :show, id)
+@@ -44,7 +57,7 @@ defmodule TvRecipeWeb.RecipeControllerTest do
    end
-
--  test "updates chosen resource and redirects when data is valid", %{conn: conn} do
-+  test "updates chosen resource and redirects when data is valid", %{conn: conn, attrs: attrs} do
-     recipe = Repo.insert! %Recipe{}
--    conn = put conn, Routes.recipe_path(conn, :update, recipe), recipe: @valid_attrs
-+    conn = put conn, Routes.recipe_path(conn, :update, recipe), recipe: attrs
-     assert redirected_to(conn) == Routes.recipe_path(conn, :show, recipe)
--    assert Repo.get_by(Recipe, @valid_attrs)
-+    assert Repo.get_by(Recipe, attrs)
+ 
+   describe "edit recipe" do
+-    setup [:create_recipe]
++    setup [:init_attrs, :create_recipe]
+ 
+     test "renders form for editing chosen recipe", %{conn: conn, recipe: recipe} do
+       conn = get(conn, Routes.recipe_path(conn, :edit, recipe))
+@@ -53,7 +66,7 @@ defmodule TvRecipeWeb.RecipeControllerTest do
    end
+ 
+   describe "update recipe" do
+-    setup [:create_recipe]
++    setup [:init_attrs, :create_recipe]
+ 
+     test "redirects when data is valid", %{conn: conn, recipe: recipe} do
+       conn = put(conn, Routes.recipe_path(conn, :update, recipe), recipe: @update_attrs)
+@@ -70,7 +83,7 @@ defmodule TvRecipeWeb.RecipeControllerTest do
+   end
+ 
+   describe "delete recipe" do
+-    setup [:create_recipe]
++    setup [:init_attrs, :create_recipe]
+ 
+     test "deletes chosen recipe", %{conn: conn, recipe: recipe} do
+       conn = delete(conn, Routes.recipe_path(conn, :delete, recipe))
+@@ -81,8 +94,10 @@ defmodule TvRecipeWeb.RecipeControllerTest do
+     end
+   end
+ 
+-  defp create_recipe(_) do
+-    recipe = fixture(:recipe)
+-    %{recipe: recipe}
++  defp create_recipe(%{attrs: attrs} = context) do
++    recipe = fixture(attrs)
++
++    context
++    |> Map.put(:recipe, recipe)
+   end
+ end
 ```
 在 `setup` 块中，我们新建了一个用户，并且重新组合出真正有效的 recipe 属性 `attrs`，然后返回。
 

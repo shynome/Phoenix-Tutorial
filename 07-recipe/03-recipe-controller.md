@@ -131,101 +131,76 @@ delete|需要
 前面章节中我们已经尝试过使用 `setup [:login_user]` 来标注用户登录状态下的测试，现在根据上面罗列的需求来修改 `recipe_controller_test.exs` 文件中的测试：
 
 ```elixir
-diff --git a/test/controllers/recipe_controller_test.exs b/test/controllers/recipe_controller_test.exs
-index 51fdeab..5632f8c 100644
---- a/test/controllers/recipe_controller_test.exs
-+++ b/test/controllers/recipe_controller_test.exs
-@@ -5,51 +5,65 @@ defmodule TvRecipeWeb.RecipeControllerTest do
-   @valid_attrs %{content: "some content", episode: 42, name: "some content", season: 42, title: "some content"}
-   @invalid_attrs %{}
-
-
+diff --git a/test/tv_recipe_web/controllers/recipe_controller_test.exs b/test/tv_recipe_web/controllers/recipe_controller_test.exs
+index 0548c85..5eb8866 100644
+--- a/test/tv_recipe_web/controllers/recipe_controller_test.exs
++++ b/test/tv_recipe_web/controllers/recipe_controller_test.exs
+@@ -10,8 +10,18 @@ defmodule TvRecipeWeb.RecipeControllerTest do
+   @update_attrs %{content: "some updated content", episode: 43, name: "some updated name", season: 43, title: "some updated title"}
+   @invalid_attrs %{content: nil, episode: nil, name: nil, season: nil, title: nil}
+ 
+-  defp init_attrs (%{conn: conn} = context) do
+-     user = Repo.insert! User.changeset(%User{}, %{email: "chenxsan@gmail.com", username: "chenxsan", password: String.duplicate("1", 6)})
 +  defp login_user(%{conn: conn} = context) do
 +    user_attrs = %{email: "chenxsan@gmail.com", username: "chenxsan", password: String.duplicate("1", 6)}
 +    user = Repo.insert! User.changeset(%User{}, user_attrs)
-+    attrs = Map.put(@valid_attrs, :user_id, user.id)
++    attrs = Map.put(@create_attrs, :user_id, user.id)
 +    conn = post conn, Routes.session_path(conn, :create), session: user_attrs
-+    
-+    context 
-+    |> Map.put :conn, conn
-+    |> Map.put :user, user
-   end
-
--  defp init_attrs(%{conn: conn} = context) do
-+  defp init_attrs(%{user: user} = context) do
--     user = Repo.insert! User.changeset(%User{}, %{email: "chenxsan@gmail.com", username: "chenxsan", password: String.duplicate("1", 6)})
-      attrs = Map.put(@valid_attrs, :user_id, user.id)
++
++    context
++    |> Map.put(:conn, conn)
++    |> Map.put(:user, user)
++  end
++
++  defp init_attrs (%{user: user} = context) do
+      attrs = Map.put(@create_attrs, :user_id, user.id)
  
       context
-      |> Map.put :attrs, attrs
+@@ -24,7 +34,7 @@ defmodule TvRecipeWeb.RecipeControllerTest do
    end
-
-+  setup [:login_user, :init_attrs]
-   test "lists all entries on index", %{conn: conn} do
-     conn = get conn, Routes.recipe_path(conn, :index)
-     assert html_response(conn, 200) =~ "Listing recipes"
+ 
+   describe "index" do
+-    setup [:init_attrs]
++    setup [:login_user, :init_attrs]
+     test "lists all recipes", %{conn: conn} do
+       conn = get(conn, Routes.recipe_path(conn, :index))
+       assert html_response(conn, 200) =~ "Listing Recipes"
+@@ -39,7 +49,7 @@ defmodule TvRecipeWeb.RecipeControllerTest do
    end
-
-+  setup [:login_user, :init_attrs]
-   test "renders form for new resources", %{conn: conn} do
-     conn = get conn, Routes.recipe_path(conn, :new)
-     assert html_response(conn, 200) =~ "New recipe"
+ 
+   describe "create recipe" do
+-    setup [:init_attrs]
++    setup [:login_user, :init_attrs]
+     test "redirects to show when data is valid", %{conn: conn, attrs: attrs} do
+       conn = post(conn, Routes.recipe_path(conn, :create), recipe: attrs)
+ 
+@@ -57,7 +67,7 @@ defmodule TvRecipeWeb.RecipeControllerTest do
    end
-
-+  setup [:login_user, :init_attrs]
-   test "creates resource and redirects when data is valid", %{conn: conn, attrs: attrs} do
-     conn = post conn, Routes.recipe_path(conn, :create), recipe: attrs
-     assert redirected_to(conn) == Routes.recipe_path(conn, :index)
-     assert Repo.get_by(Recipe, attrs)
+ 
+   describe "edit recipe" do
+-    setup [:init_attrs, :create_recipe]
++    setup [:login_user, :init_attrs, :create_recipe]
+ 
+     test "renders form for editing chosen recipe", %{conn: conn, recipe: recipe} do
+       conn = get(conn, Routes.recipe_path(conn, :edit, recipe))
+@@ -66,7 +76,7 @@ defmodule TvRecipeWeb.RecipeControllerTest do
    end
-
-+  setup [:login_user, :init_attrs]
-   test "does not create resource and renders errors when data is invalid", %{conn: conn} do
-     conn = post conn, Routes.recipe_path(conn, :create), recipe: @invalid_attrs
-     assert html_response(conn, 200) =~ "New recipe"
+ 
+   describe "update recipe" do
+-    setup [:init_attrs, :create_recipe]
++    setup [:login_user, :init_attrs, :create_recipe]
+ 
+     test "redirects when data is valid", %{conn: conn, recipe: recipe} do
+       conn = put(conn, Routes.recipe_path(conn, :update, recipe), recipe: @update_attrs)
+@@ -83,7 +93,7 @@ defmodule TvRecipeWeb.RecipeControllerTest do
    end
-
-+  setup [:login_user, :init_attrs]
-   test "shows chosen resource", %{conn: conn} do
-     recipe = Repo.insert! %Recipe{}
-     conn = get conn, Routes.recipe_path(conn, :show, recipe)
-     assert html_response(conn, 200) =~ "Show recipe"
-   end
-
-+  setup [:login_user, :init_attrs]
-+  setup [:login_user, :init_attrs]
-   test "renders page not found when id is nonexistent", %{conn: conn} do
-     assert_error_sent 404, fn ->
-       get conn, Routes.recipe_path(conn, :show, -1)
-     end
-   end
-
-+  setup [:login_user, :init_attrs]
-   test "renders form for editing chosen resource", %{conn: conn} do
-     recipe = Repo.insert! %Recipe{}
-     conn = get conn, Routes.recipe_path(conn, :edit, recipe)
-     assert html_response(conn, 200) =~ "Edit recipe"
-   end
-
-+  setup [:login_user, :init_attrs]
-   test "updates chosen resource and redirects when data is valid", %{conn: conn, attrs: attrs} do
-     recipe = Repo.insert! %Recipe{}
-     conn = put conn, Routes.recipe_path(conn, :update, recipe), recipe: attrs
-@@ -57,12 +71,14 @@ defmodule TvRecipeWeb.RecipeControllerTest do
-     assert Repo.get_by(Recipe, attrs)
-   end
-
-+  setup [:login_user, :init_attrs]
-   test "does not update chosen resource and renders errors when data is invalid", %{conn: conn} do
-     recipe = Repo.insert! %Recipe{}
-     conn = put conn, Routes.recipe_path(conn, :update, recipe), recipe: @invalid_attrs
-     assert html_response(conn, 200) =~ "Edit recipe"
-   end
-
-+  setup [:login_user, :init_attrs]
-   test "deletes chosen resource", %{conn: conn} do
-     recipe = Repo.insert! %Recipe{}
-     conn = delete conn, Routes.recipe_path(conn, :delete, recipe)
+ 
+   describe "delete recipe" do
+-    setup [:init_attrs, :create_recipe]
++    setup [:login_user, :init_attrs, :create_recipe]
+ 
+     test "deletes chosen recipe", %{conn: conn, recipe: recipe} do
+       conn = delete(conn, Routes.recipe_path(conn, :delete, recipe))
 ```
 
 我们给所有测试代码都加上了 `setup [:login_user, :init_attrs]` 的设置。

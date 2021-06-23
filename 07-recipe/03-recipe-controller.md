@@ -139,8 +139,6 @@ index 0548c85..5eb8866 100644
    @update_attrs %{content: "some updated content", episode: 43, name: "some updated name", season: 43, title: "some updated title"}
    @invalid_attrs %{content: nil, episode: nil, name: nil, season: nil, title: nil}
  
--  defp init_attrs (%{conn: conn} = context) do
--     user = Repo.insert! User.changeset(%User{}, %{email: "chenxsan@gmail.com", username: "chenxsan", password: String.duplicate("1", 6)})
 +  defp login_user(%{conn: conn} = context) do
 +    user_attrs = %{email: "chenxsan@gmail.com", username: "chenxsan", password: String.duplicate("1", 6)}
 +    user = Repo.insert! User.changeset(%User{}, user_attrs)
@@ -152,7 +150,9 @@ index 0548c85..5eb8866 100644
 +    |> Map.put(:user, user)
 +  end
 +
+-  defp init_attrs (%{conn: conn} = context) do
 +  defp init_attrs (%{user: user} = context) do
+-     user = Repo.insert! User.changeset(%User{}, %{email: "chenxsan@gmail.com", username: "chenxsan", password: String.duplicate("1", 6)})
       attrs = Map.put(@create_attrs, :user_id, user.id)
  
       context

@@ -145,6 +145,7 @@ index 8174c14..9695647 100644
 +++ b/test/views/recipe_view_test.exs
 -  @recipe1 %{id: "1", name: "淘米", title: "侠饭", season: "1", episode: "1", content: "洗掉米表面的淀粉", user_id: "999"}
 -  @recipe2 %{id: "2", name: "煮饭", title: "侠饭", season: "1", episode: "1", content: "浸泡", user_id: "888"}
+# 使用带有 url field 的数据
 +  @recipe1 %{id: "1", name: "淘米", title: "侠饭", season: "1", episode: "1", content: "洗掉米表面的淀粉", user_id: "999", url: "http://localhost"}
 +  @recipe2 %{id: "2", name: "煮饭", title: "侠饭", season: "1", episode: "1", content: "浸泡", user_id: "888", url: "http://localhost"}
 @@ -28,4 +28,23 @@ defmodule TvRecipe.RecipeViewTest do

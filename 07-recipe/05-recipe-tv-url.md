@@ -148,7 +148,7 @@ index 8174c14..9695647 100644
    end
 
 +  test "render new.html", %{conn: conn} do
-+    changeset = Recipe.changeset(%Recipe{})
++    changeset = Recipe.changeset(%Recipe{}, %{})
 +    content = render_to_string(TvRecipe.RecipeView, "new.html", conn: conn, changeset: changeset)
 +    assert String.contains?(content, "url")
 +  end
@@ -156,14 +156,14 @@ index 8174c14..9695647 100644
 +  test "render show.html", %{conn: conn} do
 +    recipe = struct(Recipe, @recipe1)
 +    content = render_to_string(TvRecipe.RecipeView, "show.html", conn: conn, recipe: recipe)
-+    assert String.contains?(content, recipe.url)
++    assert String.contains?(content, @recipe1.url)
 +  end
 +
 +  test "render edit.html", %{conn: conn} do
 +    recipe = struct(Recipe, @recipe1)
-+    changeset = Recipe.changeset(recipe)
++    changeset = Recipe.changeset(%Recipe{}, @recipe1)
 +    content = render_to_string(TvRecipe.RecipeView, "edit.html", conn: conn, changeset: changeset, recipe: recipe)
-+    assert String.contains?(content, recipe.url)
++    assert String.contains?(content, @recipe1.url)
 +  end
 +
  end

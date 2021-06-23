@@ -177,11 +177,11 @@ index b13f370..49240c9 100644
 @@ -19,6 +19,7 @@
              <li><a href="http://www.phoenixframework.org/docs">Get Started</a></li>
              <%= if @current_user do %>
-               <li><%= link @current_user.username, to: user_path(@conn, :show, @current_user) %></li>
-+              <li><%= link "菜谱", to: recipe_path(@conn, :index) %></li>
-               <li><%= link "退出", to: session_path(@conn, :delete, @current_user), method: "delete" %></li>
+               <li><%= link @current_user.username, to: Routes.user_path(@conn, :show, @current_user) %></li>
++              <li><%= link "菜谱", to: Routes.recipe_path(@conn, :index) %></li>
+               <li><%= link "退出", to: Routes.session_path(@conn, :delete, @current_user), method: "delete" %></li>
              <% else %>
-               <li><%= link "登录", to: session_path(@conn, :new) %></li>
+               <li><%= link "登录", to: Routes.session_path(@conn, :new) %></li>
 ```
 
 运行测试：

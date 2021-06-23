@@ -235,7 +235,7 @@ index e298b68..3dd3e7f 100644
 +    else
 +      conn
 +      |> put_flash(:info, "请先登录")
-+      |> redirect(to: Routes.Routes.session_path(conn, :new))
++      |> redirect(to: Routes.session_path(conn, :new))
 +      |> halt()
 +    end
 +  end
@@ -252,7 +252,7 @@ index e298b68..3dd3e7f 100644
 +    else
 +      conn
 +      |> put_flash(:error, "禁止访问未授权页面")
-+      |> redirect(to: Routes.Routes.user_path(conn, :show, conn.assigns.current_user))
++      |> redirect(to: Routes.user_path(conn, :show, conn.assigns.current_user))
 +      |> halt()
 +    end
 +  end
